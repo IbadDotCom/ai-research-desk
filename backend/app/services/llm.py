@@ -5,6 +5,7 @@ from ollama import AsyncClient
 async def generate_answer(prompt: str) -> str:
     client = AsyncClient()
 
+    
     response = await client.chat(
         model="llama3.2:1b",
         messages=[
@@ -13,6 +14,11 @@ async def generate_answer(prompt: str) -> str:
                 "content": prompt,
             }
         ],
+        options={
+            "temperature": 0,
+            "num_predict": 180,
+        },
     )
+
 
     return response["message"]["content"]
