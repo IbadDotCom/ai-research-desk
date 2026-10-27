@@ -21,4 +21,7 @@ async def llm_test(request: LLMTestRequest):
 
 @app.get("/health")
 def health_check():
-    return {"status": "ok"}
+    return {
+        "status": "ok",
+        "project": "AI Research Desk"
+    }

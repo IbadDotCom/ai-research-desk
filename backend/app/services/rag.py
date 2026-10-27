@@ -30,6 +30,17 @@ async def answer_question(
     k = min(top_k, len(document["chunks"]))
     top_results = scores.topk(k)
 
+    if top_results.values[0].item() < 0.40:
+        return {
+            "document_id": document_id,
+            "question": question,
+            "answer": (
+                "I couldn't find sufficiently relevant information "
+                "in this document to answer that question."
+            ),
+            "source_pages": [],
+        }
+
     context_parts = []
 
     for score, index in zip(
@@ -37,6 +48,12 @@ async def answer_question(
         top_results.indices.tolist(),
     ):
         chunk = document["chunks"][index]
+
+        print({
+            "score": round(score, 4),
+            "page": chunk["page"],
+            "preview": chunk["text"][:150],
+        })
 
         context_parts.append(
             f"[Page {chunk['page']}]\n{chunk['text']}"
