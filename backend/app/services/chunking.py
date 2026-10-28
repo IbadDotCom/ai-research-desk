@@ -1,7 +1,6 @@
 
 import re
 
-
 def split_into_chunks(
     text: str,
     chunk_size: int = 1000,
@@ -12,16 +11,23 @@ def split_into_chunks(
     if not text:
         return []
 
+    sentences = re.split(r"(?<=[.!?])\s+", text)
+
     chunks = []
-    start = 0
+    current_chunk = ""
 
-    while start < len(text):
-        end = min(start + chunk_size, len(text))
-        chunks.append(text[start:end])
+    for sentence in sentences:
+        if not current_chunk:
+            current_chunk = sentence
+        elif len(current_chunk) + 1 + len(sentence) <= chunk_size:
+            current_chunk += " " + sentence
+        else:
+            chunks.append(current_chunk)
 
-        if end == len(text):
-            break
+            overlap_text = current_chunk[-overlap:] if overlap else ""
+            current_chunk = f"{overlap_text} {sentence}".strip()
 
-        start = end - overlap
+    if current_chunk:
+        chunks.append(current_chunk)
 
     return chunks
