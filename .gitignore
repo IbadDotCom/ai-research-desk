@@ -1,2 +1,26 @@
 
-**/__pycache__/
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local database and user documents
+*.db
+*.sqlite
+*.sqlite3
+uploads/
+documents/
+
+# Frontend dependencies and build
+node_modules/
+dist/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Local/editor files
+.vscode/
+.DS_Store

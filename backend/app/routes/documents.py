@@ -9,7 +9,12 @@ from sentence_transformers import util
 from app.schemas import SearchRequest
 from app.services.chunking import split_into_chunks
 from app.services.embeddings import embed_texts, embed_query
-from app.services.document_store import documents
+from app.services.document_store import (
+    save_document,
+    get_document,
+    list_documents,
+    delete_document,
+)
 from app.services.rag import answer_question
 
 router = APIRouter()
@@ -59,11 +64,15 @@ async def index_pdf(file: UploadFile = File(...)):
 
     document_id = str(uuid.uuid4())
 
-    documents[document_id] = {
-        "filename": file.filename,
-        "chunks": chunks,
-        "embeddings": embeddings,
-    }
+    try:
+        save_document(
+            document_id=document_id,
+            filename=file.filename,
+            chunks=chunks,
+            embeddings=embeddings,
+        )
+    except Exception:
+        raise HTTPException(500, "Could not save indexed document.")
 
     return {
         "document_id": document_id,
@@ -73,18 +82,31 @@ async def index_pdf(file: UploadFile = File(...)):
     }
 
 
+@router.get("/documents")
+def get_documents():
+    return {"documents": list_documents()}
+
+
+@router.delete("/documents/{document_id}")
+def remove_document(document_id: str):
+    if not delete_document(document_id):
+        raise HTTPException(404, "Document not found.")
+
+    return {
+        "document_id": document_id,
+        "message": "Document deleted successfully.",
+    }
+
+
 @router.post("/documents/{document_id}/search")
 def search_document(
     document_id: str,
     request: SearchRequest,
 ):
-    document = documents.get(document_id)
+    document = get_document(document_id)
 
     if document is None:
-        raise HTTPException(
-            404,
-            "Document not found. Please index the PDF again.",
-        )
+        raise HTTPException(404, "Document not found. Please index the PDF again.")
 
     query_embedding = embed_query(request.query)
 
@@ -117,15 +139,14 @@ def search_document(
         "results": results,
     }
 
+
 @router.post("/documents/{document_id}/ask")
 async def ask_document(
     document_id: str,
     request: SearchRequest,
 ):
-    answer = await answer_question(
+    return await answer_question(
         document_id=document_id,
         question=request.query,
         top_k=request.top_k,
     )
-
-    return answer
