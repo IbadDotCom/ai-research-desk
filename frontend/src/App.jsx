@@ -65,7 +65,7 @@ export default function App() {
   }
 
   async function handleDelete(documentId) {
-    if (!window.confirm("Is document ko delete karna hai?")) return;
+    if (!window.confirm("Do you want to delete this document?")) return;
 
     setError("");
     try {

@@ -1,24 +1,31 @@
 
-from ollama import AsyncClient
+import os
+
+from dotenv import load_dotenv
+from groq import AsyncGroq
+
+load_dotenv()
 
 
 async def generate_answer(prompt: str) -> str:
-    client = AsyncClient()
+    api_key = os.getenv("GROQ_API_KEY")
 
-    
-    response = await client.chat(
-        model="llama3.2:1b",
+    if not api_key:
+        raise RuntimeError("GROQ_API_KEY environment variable is not set.")
+
+    client = AsyncGroq(api_key=api_key)
+
+    response = await client.chat.completions.create(
+        model="openai/gpt-oss-20b",
         messages=[
             {
                 "role": "user",
                 "content": prompt,
             }
         ],
-        options={
-            "temperature": 0,
-            "num_predict": 180,
-        },
+        temperature=0,
+        max_completion_tokens=180,
     )
 
-
-    return response["message"]["content"]
+    answer = response.choices[0].message.content
+    return answer or ""
