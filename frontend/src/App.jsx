@@ -31,7 +31,7 @@ export default function App() {
       });
     } catch {
       setError(
-        "Backend se connect nahi ho raha. Check karo ke FastAPI chal raha hai.",
+        "Error connecting to the backend.",
       );
     }
   }
@@ -43,7 +43,7 @@ export default function App() {
   async function handleUpload(event) {
     event.preventDefault();
     if (!file) {
-      setError("Pehle ek PDF select karo.");
+      setError("Please select a PDF file to upload.");
       return;
     }
 
@@ -81,7 +81,7 @@ export default function App() {
     event.preventDefault();
 
     if (!selectedId) {
-      setError("Pehle My Documents mein se ek document select karo.");
+      setError("Please select a document from My Documents.");
       setActiveTab("My Documents");
       return;
     }
@@ -383,7 +383,7 @@ export default function App() {
         </section>
 
         <footer>
-          <span>AI RESEARCH DESK</span>
+          <span>AI RESEARCH DESK &copy; IbadDotCom</span>
           <span>Built for curious minds.</span>
         </footer>
       </main>

@@ -235,6 +235,7 @@ h1 {
 
 .intro {
   max-width: 510px;
+  margin: 0 auto;
   color: #828095;
   font-size: 14px;
   line-height: 1.9;
@@ -540,6 +541,8 @@ footer {
   min-width: 0;
   flex: 1;
   padding: 12px;
+  background: #f8f8fc;
+  color: #25243a;
   border: 1px solid #e6e3ef;
   border-radius: 9px;
   outline: none;
